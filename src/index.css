@@ -5,3 +5,8 @@
 *{
     font-family: 'Montserrat', sans-serif;
 }
+
+
+.Toastify__toast-container--top-right {
+    font-size: 13px;
+}
