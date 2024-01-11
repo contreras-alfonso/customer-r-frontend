@@ -2,10 +2,13 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import { isFormValid } from "../helpers/herlpers";
 import { toast } from "react-toastify";
+import { addCustomer } from "../api/customers/customers";
 
 export const ModalFormNewCustomer = ({
   modalFormNewCustomer,
   setModalFormNewCustomer,
+  customers,
+  setCustomers,
 }) => {
   const [inputType, setInputType] = useState("password");
   const [objCustomer, setObjCustomer] = useState({
@@ -21,12 +24,64 @@ export const ModalFormNewCustomer = ({
     password: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    const {
+      dni,
+      names,
+      lastnames,
+      birthdate,
+      phone,
+      email,
+      bank,
+      otherBank,
+      accountNumber,
+      password,
+    } = objCustomer;
     e.preventDefault();
-    const {status,msg} = isFormValid(objCustomer.dni,objCustomer.names,objCustomer.lastnames,objCustomer.birthdate,objCustomer.phone,objCustomer.email,objCustomer.bank,objCustomer.otherBank,objCustomer.accountNumber,objCustomer.  password);
-    if(!status) return toast.error(msg)
-    
-  }
+    const { status, msg } = isFormValid(
+      dni,
+      names,
+      lastnames,
+      birthdate,
+      phone,
+      email,
+      bank,
+      otherBank,
+      accountNumber,
+      password
+    );
+    if (!status) return toast.error(msg);
+    const data = await addCustomer({
+      dni,
+      names,
+      lastnames,
+      birthdate,
+      phone,
+      email,
+      bank: otherBank || bank,
+      accountNumber,
+      password,
+    });
+    if (!data.status) return toast.error(data.msg);
+    toast.success(data.msg);
+
+    const { customer } = data;
+
+    const newObjCustomer = {
+      dni: customer.dni,
+      names: customer.names,
+      last_names: customer.last_names,
+      birthdate: customer.birthdate,
+      phone: customer.phone,
+      email: customer.email,
+      bank: customer.bank,
+      cci_number: customer.cci_number,
+    };
+    const copyCustomers = [...customers];
+    copyCustomers.unshift(newObjCustomer)
+    setCustomers(copyCustomers);
+    setModalFormNewCustomer(false);
+  };
 
   const modifyCustomerState = (e) => {
     const copyObjCustomer = { ...objCustomer, [e.target.name]: e.target.value };
@@ -36,13 +91,7 @@ export const ModalFormNewCustomer = ({
   return (
     <>
       <Transition appear show={modalFormNewCustomer} as={Fragment}>
-        <Dialog
-          as="div"
-          className="relative z-10"
-          onClose={() => {
-         
-          }}
-        >
+        <Dialog as="div" className="relative z-10" onClose={() => {}}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -68,7 +117,14 @@ export const ModalFormNewCustomer = ({
               >
                 <Dialog.Panel className="w-[700px] transform overflow-hidden rounded-lg bg-white p-10 text-left align-middle shadow-xl transition-all">
                   <div className="flex justify-end">
-                      <button onClick={()=>{setModalFormNewCustomer(false)}} className="w-1 h-1 rounded-lg flex items-center justify-center bg-slate-800 text-white p-3 text-sm font-medium hover:text-white/80 duration-300">x</button>
+                    <button
+                      onClick={() => {
+                        setModalFormNewCustomer(false);
+                      }}
+                      className="w-1 h-1 rounded-lg flex items-center justify-center bg-slate-800 text-white p-3 text-sm font-medium hover:text-white/80 duration-300"
+                    >
+                      x
+                    </button>
                   </div>
                   <Dialog.Title
                     as="h3"
@@ -76,7 +132,10 @@ export const ModalFormNewCustomer = ({
                   >
                     New Customer
                   </Dialog.Title>
-                  <form onSubmit={handleSubmit} className="bg-white rounded-lg flex flex-col gap-[10px]">
+                  <form
+                    onSubmit={handleSubmit}
+                    className="bg-white rounded-lg flex flex-col gap-[10px]"
+                  >
                     <h2 className="leading-6 text-gray-900 font-black uppercase text-center"></h2>
                     <span className="text-xs uppercase font-semibold">DNI</span>
                     <input
@@ -247,7 +306,7 @@ export const ModalFormNewCustomer = ({
                             : setInputType("password");
                         }}
                       >
-                        {inputType === 'password' ? (
+                        {inputType === "password" ? (
                           <i className="fa-duotone fa-eye-slash"></i>
                         ) : (
                           <i className="fa-solid fa-eye"></i>

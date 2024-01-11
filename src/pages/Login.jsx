@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { isEmail } from "../helpers/herlpers";
+import { loginCustomer } from "../api/customers/customers";
+
 
 export const Login = () => {
   const [user, setUser] = useState("");
@@ -9,11 +11,15 @@ export const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if ([user, password].includes("")) {
-      toast.error("Todos los campos son obligatorios.");
+      toast.error("All fields are required.");
       return;
     }
-  
-    if (!isEmail(user.trim())) return toast.error("Ingrese un email válido.");
+
+    if (!isEmail(user.trim())) return toast.error("Enter a valid email.");
+
+    const data = await loginCustomer({email:user.trim(),password})
+    if(!data.status) return toast.error(data.msg);
+    return toast.success(data.msg);
 
   };
 

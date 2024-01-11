@@ -1,10 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ModalFormNewCustomer } from "../components/ModalFormNewCustomer";
 import { ContainerTableCustomer } from "../components/ContainerTableCustomer";
 import { Link } from "react-router-dom";
+import { getAllCustomers } from "../api/customers/customers";
 
 export const CustomerHome = () => {
   const [modalFormNewCustomer, setModalFormNewCustomer] = useState(false);
+  const [customers,setCustomers] = useState([]);
+  const [page,setPage] = useState(1);
+  const [loading,setLoading] = useState(false);
+
+  useEffect(()=>{
+    const getCustomers = async () => {
+      setLoading(true);
+      const data = await getAllCustomers(page)
+
+      setLoading(false);
+      setCustomers(data.customers);
+    }
+    getCustomers();
+  },[page])
 
   return (
     <>
@@ -19,15 +34,16 @@ export const CustomerHome = () => {
             New Customer +
           </button>
 
-          <Link to={'/login'} className="bg-slate-800 rounded-lg py-3 px-5 text-white text-xs hover:bg-slate-900 duration-300 max-lg:w-full">
+          <Link to={'/login'} className="bg-slate-800 rounded-lg py-3 px-5 text-white text-xs hover:bg-slate-900 duration-300 max-lg:w-full text-center">
             Bonus - Login
           </Link>
         </div>
 
-        <ContainerTableCustomer />
+        <ContainerTableCustomer loading={loading} setLoading={setLoading} page={page} setPage={setPage} customers={customers} setCustomers={setCustomers}/>
 
         {modalFormNewCustomer && (
           <ModalFormNewCustomer
+            customers={customers} setCustomers={setCustomers}
             modalFormNewCustomer={modalFormNewCustomer}
             setModalFormNewCustomer={setModalFormNewCustomer}
           />

@@ -6,7 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { CustomerLayout } from './layouts/CustomerLayout';
 import { CustomerHome } from './pages/CustomerHome';
 import { ToastContainer } from 'react-toastify';
-import { Login } from './pages/Login';
+
+
 
 const router = createBrowserRouter([
   {
@@ -17,10 +18,10 @@ const router = createBrowserRouter([
         index: true,
         element: <CustomerHome />,
       },
-      {
-        path: 'login',
-        element: <Login />,
-      }
+      // {
+      //   path: 'login',
+      //   element: <Login />,
+      // }
     ]
   }
 ])
