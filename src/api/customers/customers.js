@@ -25,7 +25,6 @@ const getAllCustomers = async (pag) => {
 }
 
 const getCustomer = async (nameOrDni) => {
-    console.log(nameOrDni)
     const url = `${backendRoute}/search/${nameOrDni}`;
     const response = await fetch(url,{
         method:'GET',

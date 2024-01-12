@@ -66,7 +66,7 @@ export const ContainerTableCustomer = ({
 
                 <tbody className="">
                   {customers?.map((e) => (
-                    <tr key={e.id}>
+                    <tr key={crypto.randomUUID()}>
                       <td className="text-sm text-center px-3 py-3">
                         {e?.dni}
                       </td>
